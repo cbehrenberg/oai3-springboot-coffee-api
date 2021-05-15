@@ -1,0 +1,400 @@
+openapi: 3.1.0
+info:
+  title: Coffee API
+  version: '1.0'
+  description: Serves as an example for an OpenAPI definition.
+  summary: API to manage types of coffee
+  contact:
+    name: Christian Behrenberg
+    email: christian.behrenberg@gmail.com
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+servers:
+  - url: 'http://localhost:8080'
+    description: localhost
+paths:
+  /coffees:
+    get:
+      summary: List coffee types
+      tags: []
+      operationId: list-coffees
+      description: Lists all types of coffees
+      parameters:
+        - schema:
+            type: boolean
+            example: 'true'
+            default: 'false'
+          in: query
+          name: omitContent
+          description: 'If true, then the actual information about the coffee types is not given, only the ids'
+        - schema:
+            type: boolean
+            example: 'true'
+            default: 'false'
+          in: query
+          name: totalOnly
+          description: 'If true, only the number of types of coffee is returned'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdCoffeeList'
+              examples:
+                example-no-coffees:
+                  value:
+                    total: 0
+                    coffees: []
+                example-two-coffees:
+                  value:
+                    total: 2
+                    coffees:
+                      - id: 123abc
+                        coffee:
+                          roastery: Lucaffe
+                          name: Blucaffé
+                          priceEurKg: 44.14
+                          blend:
+                            arabica: 0.9
+                            robusta: 0.1
+                          taste:
+                            strength: 0.3
+                            caffeine: 0.7
+                            roastLevel: 0.7
+                            crema: 0.7
+                      - id: 456def
+                        coffee:
+                          roastery: Badilatti
+                          name: Aromatico Selezione Passione
+                          priceEurKg: 23.9
+                          blend:
+                            arabica: 0.8
+                            robusta: 0.2
+                          taste:
+                            strength: 1
+                            caffeine: 1
+                            roastLevel: 0.7
+                            crema: 1
+    post:
+      summary: Create coffee
+      operationId: create-coffee
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdCoffeeTupel'
+              examples:
+                example-onlyid:
+                  value:
+                    id: 789ghi
+                example-full:
+                  value:
+                    id: 789ghi
+                    coffee:
+                      roastery: Aromatico
+                      name: 5 Stelle Decaffeinato
+                      priceEurKg: 23.5
+                      blend:
+                        arabica: 0.65
+                        robusta: 0.35
+                      taste:
+                        strength: 0.7
+                        caffeine: 0
+                        roastLevel: 0.7
+                        crema: 1
+      description: Creates a new type of coffee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coffee'
+            examples:
+              example:
+                value:
+                  roastery: Aromatico
+                  name: 5 Stelle Decaffeinato
+                  priceEurKg: 23.5
+                  blend:
+                    arabica: 0.65
+                    robusta: 0.35
+                  taste:
+                    strength: 0.7
+                    caffeine: 0
+                    roastLevel: 0.7
+                    crema: 1
+        description: 'Type of coffee that is to be newly created. If the roastery already has a coffee type with the same name, the request fails.'
+      parameters:
+        - schema:
+            type: boolean
+            default: 'false'
+            example: 'true'
+          in: query
+          name: withData
+          description: 'If true, the data is returned in addition to the referenceable id of the newly created coffee type'
+  '/coffees/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Get coffee type
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coffee'
+              examples:
+                example:
+                  value:
+                    roastery: Badilatti
+                    name: Allegra Fairtrade
+                    priceEurKg: 29.24
+                    blend:
+                      arabica: 0.9
+                      robusta: 0.1
+                    taste:
+                      strength: 0.7
+                      caffeine: 0.7
+                      roastLevel: 0.7
+                      crema: 0.7
+      operationId: get-coffee-id
+      description: Returns a specific type of coffee
+    put:
+      summary: Update coffee
+      operationId: update-coffee-id
+      responses:
+        '200':
+          description: OK
+      description: Updates a given type of coffee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coffee'
+        description: Complete data of the type of coffee to be overwritten
+    delete:
+      summary: Delete coffee
+      operationId: delete-coffee-id
+      responses:
+        '200':
+          description: OK
+      description: Deletes a type of coffee
+    patch:
+      summary: ''
+      operationId: patch-coffee-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coffee'
+              examples:
+                example:
+                  value:
+                    roastery: GM Caffé
+                    name: Bio Black Pearl
+                    priceEurKg: 12.9
+                    blend:
+                      arabica: 1
+                      robusta: 0
+                    taste:
+                      strength: 0.7
+                      caffeine: 0.3
+                      roastLevel: 0.7
+      description: Partially overwrites the data of a coffee type.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coffee'
+            examples:
+              example:
+                value:
+                  name: Bio Black Pearl
+                  priceEurKg: 12.9
+                  taste:
+                    crema: null
+        description: 'To delete an optional field, it must be passed with a null value.'
+components:
+  schemas:
+    Coffee:
+      description: 'Describes a type of coffee in terms of name, manufacturer, price, taste and composition.'
+      type: object
+      x-examples:
+        example-1:
+          roastery: Lucaffe
+          name: Blucaffé
+          priceEurKg: 44.14
+          blend:
+            arabica: 0.9
+            robusta: 0.1
+          taste:
+            strength: 0.3
+            caffeine: 0.7
+            roastLevel: 0.7
+            crema: 0.7
+      examples:
+        - roastery: Lucaffe
+          name: Blucaffé
+          priceEurKg: 44.14
+          blend:
+            arabica: 0.9
+            robusta: 0.1
+          taste:
+            strength: 0.3
+            caffeine: 0.7
+            roastLevel: 0.7
+            crema: 0.7
+        - roastery: Kimbo
+          name: Decaffeinated
+          priceEurKg: 20.41
+          blend:
+            arabica: 0.7
+            robusta: 0.3
+          taste:
+            strength: 0.7
+            caffeine: 0
+            roastLevel: 0.7
+            crema: 0.7
+      title: Coffee Type
+      properties:
+        roastery:
+          type: string
+          minLength: 1
+          example: Lavaza
+          description: Maker of the coffee
+        name:
+          type: string
+          minLength: 1
+          description: Name of the type of coffee
+          example: Caffè Crema Classico
+        priceEurKg:
+          type: number
+          description: Price per kilogram in euros
+          minimum: 0
+          example: 10.79
+          multipleOf: 0.01
+          format: float
+        blend:
+          type: object
+          description: Describes the blend based on the percentage of certain types of coffee beans
+          minProperties: 1
+          properties:
+            arabica:
+              type: number
+              description: Proportion of the Arabica bean in the blend
+              format: float
+              example: 0.7
+              minimum: 0
+              maximum: 1
+              multipleOf: 0.01
+            robusta:
+              type: number
+              description: Proportion of Robusta bean in the blend
+              example: 0.3
+              format: float
+              minimum: 0
+              maximum: 1
+              multipleOf: 0.01
+        taste:
+          type: object
+          description: Describes the taste of the coffee type based on the weighting of certain criteria.
+          minProperties: 1
+          properties:
+            strength:
+              type: number
+              description: Strength of the coffee on the tongue
+              minimum: 0
+              maximum: 1
+              multipleOf: 0.01
+              example: 0.9
+              format: float
+            caffeine:
+              type: number
+              description: 'Caffeine degree of the coffee type - if the value is 0, then this is a decaffeinated coffee'
+              format: float
+              example: 0.8
+              minimum: 0
+              maximum: 1
+              multipleOf: 0.01
+            roastLevel:
+              type: number
+              description: Degree of roast of the coffee beans used
+              example: 0.7
+              format: float
+              minimum: 0
+              maximum: 1
+              multipleOf: 0.01
+            crema:
+              type: number
+              description: Character and beauty of the coffee crema
+              format: float
+              example: 0.9
+              minimum: 0
+              maximum: 1
+              multipleOf: 0.01
+    IdCoffeeTupel:
+      description: Assigns a referenceable id to a type of coffee
+      type: object
+      x-examples:
+        example-1:
+          id: abc123
+          coffee: {}
+      title: Referenceable coffee type
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Referenceable id of the type of coffee
+        coffee:
+          $ref: '#/components/schemas/Coffee'
+      required:
+        - id
+    IdCoffeeList:
+      description: List of types of coffee and their identifiable ids and total number
+      type: object
+      x-examples:
+        example-1:
+          total: 7
+          coffees:
+            - id: string
+              coffee:
+                roastery: Lucaffe
+                name: Blucaffé
+                priceEurKg: 44.14
+                blend:
+                  arabica: 0.9
+                  robusta: 0.1
+                taste:
+                  strength: 0.3
+                  caffeine: 0.7
+                  roastLevel: 0.7
+                  crema: 0.7
+      properties:
+        total:
+          type: integer
+          description: Total number of all types of coffee
+          format: int64
+          example: 7
+          minimum: 0
+        coffees:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          description: List of types of coffee and their identifiable ids
+          items:
+            $ref: '#/components/schemas/IdCoffeeTupel'
+      required:
+        - total
+      title: List of referenceable coffee types
+  responses: {}

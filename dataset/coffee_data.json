@@ -1,0 +1,167 @@
+[
+  {
+    "roastery": "Lucaffe",
+    "name": "Blucaffé",
+    "priceEurKg": 44.14,
+    "blend": {
+      "arabica": 0.9,
+      "robusta": 0.1
+    },
+    "taste": {
+      "strength": 0.3,
+      "caffeine": 0.7,
+      "roastLevel": 0.7,
+      "crema": 0.7
+    }
+  },
+  {
+    "roastery": "Kimbo",
+    "name": "Decaffeinated",
+    "priceEurKg": 20.41,
+    "blend": {
+      "arabica": 0.7,
+      "robusta": 0.3
+    },
+    "taste": {
+      "strength": 0.7,
+      "caffeine": 0,
+      "roastLevel": 0.7,
+      "crema": 0.7
+    }
+  },
+  {
+    "roastery": "Vee",
+    "name": "Espresso Crema Napoli Superiore",
+    "priceEurKg": 28.44,
+    "blend": {
+      "arabica": 0.95,
+      "robusta": 0.05
+    },
+    "taste": {
+      "strength": 1,
+      "caffeine": 0.7,
+      "roastLevel": 1,
+      "crema": 1
+    }
+  },
+  {
+    "roastery": "Lucaffe",
+    "name": "Exquisite",
+    "priceEurKg": 17.3,
+    "blend": {
+      "arabica": 0.9,
+      "robusta": 0.1
+    },
+    "taste": {
+      "strength": 0.7,
+      "caffeine": 0.7,
+      "roastLevel": 0.7,
+      "crema": 0.7
+    }
+  },
+  {
+    "roastery": "Lavaza",
+    "name": "Caffè Crema Classico",
+    "priceEurKg": 10.79,
+    "blend": {
+      "arabica": 0.7,
+      "robusta": 0.3
+    },
+    "taste": {
+      "strength": 1,
+      "caffeine": 1,
+      "roastLevel": 0.7,
+      "crema": 1
+    }
+  },
+  {
+    "roastery": "Badilatti",
+    "name": "Aromatico Selezione Passione",
+    "priceEurKg": 23.9,
+    "blend": {
+      "arabica": 0.8,
+      "robusta": 0.2
+    },
+    "taste": {
+      "strength": 1,
+      "caffeine": 1,
+      "roastLevel": 0.7,
+      "crema": 1
+    }
+  },
+  {
+    "roastery": "Wild",
+    "name": "Mountain sun",
+    "priceEurKg": 27.2,
+    "blend": {
+      "arabica": 1,
+      "robusta": 0
+    },
+    "taste": {
+      "strength": 0.7,
+      "caffeine": 0.7,
+      "roastLevel": 1,
+      "crema": 0.7
+    }
+  },
+  {
+    "roastery": "Union",
+    "name": "Northern lights",
+    "priceEurKg": 23.2,
+    "blend": {
+      "arabica": 0.9,
+      "robusta": 0.1
+    },
+    "taste": {
+      "strength": 0.7,
+      "caffeine": 0.7,
+      "roastLevel": 0.7,
+      "crema": 1
+    }
+  },
+  {
+    "roastery": "Aromatico",
+    "name": "5 Stelle Decaffeinato",
+    "priceEurKg": 23.5,
+    "blend": {
+      "arabica": 0.65,
+      "robusta": 0.35
+    },
+    "taste": {
+      "strength": 0.7,
+      "caffeine": 0,
+      "roastLevel": 0.7,
+      "crema": 1
+    }
+  },
+  {
+    "roastery": "GM Caffé",
+    "name": "Organic Black Pearl",
+    "priceEurKg": 37.9,
+    "blend": {
+      "arabica": 1,
+      "robusta": 0
+    },
+    "taste": {
+      "strength": 0.7,
+      "caffeine": 0.3,
+      "roastLevel": 0.7,
+      "crema": 1
+    }
+  },
+  {
+    "roastery": "Badilatti",
+    "name": "Allegra Fairtrade",
+    "priceEurKg": 29.24,
+    "blend": {
+      "arabica": 0.9,
+      "robusta": 0.1
+    },
+    "taste": {
+      "strength": 0.7,
+      "caffeine": 0.7,
+      "roastLevel": 0.7,
+      "crema": 0.7
+    }
+  }
+]
