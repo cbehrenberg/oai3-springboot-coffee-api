@@ -248,7 +248,7 @@ components:
         roastery:
           type: string
           minLength: 1
-          example: Lavaza
+          example: Lavazza
           description: Maker of the coffee
         name:
           type: string
