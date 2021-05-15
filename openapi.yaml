@@ -2,139 +2,124 @@ openapi: 3.1.0
 info:
   title: Coffee API
   version: '1.0'
-  description: Serves as an example for an OpenAPI definition.
+  description: API to manage types of coffee.
   summary: API to manage types of coffee
   contact:
     name: Christian Behrenberg
     email: christian.behrenberg@gmail.com
   license:
     name: MIT
-    url: 'https://opensource.org/licenses/MIT'
+    url: 'https://github.com/cbehrenberg/oai3-springboot-coffee-api/blob/main/LICENSE'
 servers:
-  - url: 'http://localhost:8080'
+  - url: 'http://localhost:8080/v1'
     description: localhost
 paths:
   /coffees:
     get:
       summary: List coffee types
-      tags: []
       operationId: list-coffees
-      description: Lists all types of coffees
+      description: Returns the current list of all coffee types.
       parameters:
         - schema:
-            type: boolean
-            example: 'true'
-            default: 'false'
+            type: integer
+            example: 10
+            minimum: 1
+            default: 10
           in: query
-          name: omitContent
-          description: 'If true, then the actual information about the coffee types is not given, only the ids'
+          name: top
+          description: Limit for pagination
         - schema:
-            type: boolean
-            example: 'true'
-            default: 'false'
+            type: integer
+            example: 5
+            minimum: 0
           in: query
-          name: totalOnly
-          description: 'If true, only the number of types of coffee is returned'
+          name: skip
+          description: 'Start for pagination, beginning with 0'
+        - schema:
+            type: string
+            example: name desc
+          in: query
+          name: orderBy
+          description: 'Order by JSON path, asc(ending, default) or desc(ending)'
+        - schema:
+            type: string
+            example: roastery eq 'Lavazza'
+          in: query
+          name: filter
+          description: Filter expression
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IdCoffeeList'
-              examples:
-                example-no-coffees:
-                  value:
-                    total: 0
-                    coffees: []
-                example-two-coffees:
-                  value:
-                    total: 2
-                    coffees:
-                      - id: 123abc
+                description: ''
+                type: object
+                properties:
+                  coffees:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          minLength: 1
+                          description: Id of the coffee type
+                          example: 6b4c3f58
                         coffee:
-                          roastery: Lucaffe
-                          name: Blucaffé
-                          priceEurKg: 44.14
-                          blend:
-                            arabica: 0.9
-                            robusta: 0.1
-                          taste:
-                            strength: 0.3
-                            caffeine: 0.7
-                            roastLevel: 0.7
-                            crema: 0.7
-                      - id: 456def
-                        coffee:
-                          roastery: Badilatti
-                          name: Aromatico Selezione Passione
-                          priceEurKg: 23.9
-                          blend:
-                            arabica: 0.8
-                            robusta: 0.2
-                          taste:
-                            strength: 1
-                            caffeine: 1
-                            roastLevel: 0.7
-                            crema: 1
+                          $ref: '#/components/schemas/CoffeeType'
+                      required:
+                        - id
+                        - coffee
+                  next:
+                    type: string
+                    description: Next link for pagination
+                required:
+                  - coffees
+              examples: {}
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      tags:
+        - coffee
     post:
       summary: Create coffee
       operationId: create-coffee
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IdCoffeeTupel'
-              examples:
-                example-onlyid:
-                  value:
-                    id: 789ghi
-                example-full:
-                  value:
-                    id: 789ghi
-                    coffee:
-                      roastery: Aromatico
-                      name: 5 Stelle Decaffeinato
-                      priceEurKg: 23.5
-                      blend:
-                        arabica: 0.65
-                        robusta: 0.35
-                      taste:
-                        strength: 0.7
-                        caffeine: 0
-                        roastLevel: 0.7
-                        crema: 1
-      description: Creates a new type of coffee
+      description: Creates a new type of coffee and assigns an id.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Coffee'
-            examples:
-              example:
-                value:
-                  roastery: Aromatico
-                  name: 5 Stelle Decaffeinato
-                  priceEurKg: 23.5
-                  blend:
-                    arabica: 0.65
-                    robusta: 0.35
-                  taste:
-                    strength: 0.7
-                    caffeine: 0
-                    roastLevel: 0.7
-                    crema: 1
-        description: 'Type of coffee that is to be newly created. If the roastery already has a coffee type with the same name, the request fails.'
-      parameters:
-        - schema:
-            type: boolean
-            default: 'false'
-            example: 'true'
-          in: query
-          name: withData
-          description: 'If true, the data is returned in addition to the referenceable id of the newly created coffee type'
+              $ref: '#/components/schemas/CoffeeType'
+            examples: {}
+        description: Type of coffee that is to be newly created.
+      parameters: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                    description: Id of the created coffee type
+                    example: afad07ce
+                required:
+                  - id
+              examples: {}
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      tags:
+        - coffee
   '/coffees/{id}':
     parameters:
       - schema:
@@ -144,105 +129,97 @@ paths:
         required: true
     get:
       summary: Get coffee type
-      tags: []
+      tags:
+        - coffee
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Coffee'
-              examples:
-                example:
-                  value:
-                    roastery: Badilatti
-                    name: Allegra Fairtrade
-                    priceEurKg: 29.24
-                    blend:
-                      arabica: 0.9
-                      robusta: 0.1
-                    taste:
-                      strength: 0.7
-                      caffeine: 0.7
-                      roastLevel: 0.7
-                      crema: 0.7
+                $ref: '#/components/schemas/CoffeeType'
+              examples: {}
+        '404':
+          description: Not Found
+        '500':
+          $ref: '#/components/responses/Error'
       operationId: get-coffee-id
-      description: Returns a specific type of coffee
+      description: Return the current coffee type information.
     put:
       summary: Update coffee
       operationId: update-coffee-id
       responses:
         '200':
           description: OK
-      description: Updates a given type of coffee
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                    description: Id of the created coffee type
+                    example: afad07ce
+                required:
+                  - id
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          description: Not Found
+        '500':
+          $ref: '#/components/responses/Error'
+      description: 'Replaces coffee type data, or creates a new such resource. Fails, if the id has already been assigned.'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Coffee'
-        description: Complete data of the type of coffee to be overwritten
+              $ref: '#/components/schemas/CoffeeType'
+            examples: {}
+        description: 'Coffee type data to be overwritten, or to be created.'
+      tags:
+        - coffee
     delete:
       summary: Delete coffee
       operationId: delete-coffee-id
       responses:
         '200':
           description: OK
-      description: Deletes a type of coffee
+        '404':
+          description: Not Found
+        '500':
+          $ref: '#/components/responses/Error'
+      description: Deletes a type of coffee.
+      tags:
+        - coffee
     patch:
       summary: ''
       operationId: patch-coffee-id
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Coffee'
-              examples:
-                example:
-                  value:
-                    roastery: GM Caffé
-                    name: Bio Black Pearl
-                    priceEurKg: 12.9
-                    blend:
-                      arabica: 1
-                      robusta: 0
-                    taste:
-                      strength: 0.7
-                      caffeine: 0.3
-                      roastLevel: 0.7
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          description: Not Found
+        '500':
+          $ref: '#/components/responses/Error'
       description: Partially overwrites the data of a coffee type.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Coffee'
-            examples:
-              example:
-                value:
-                  name: Bio Black Pearl
-                  priceEurKg: 12.9
-                  taste:
-                    crema: null
-        description: 'To delete an optional field, it must be passed with a null value.'
+              $ref: '#/components/schemas/CoffeeType'
+      tags:
+        - coffee
 components:
   schemas:
-    Coffee:
+    CoffeeType:
       description: 'Describes a type of coffee in terms of name, manufacturer, price, taste and composition.'
       type: object
-      x-examples:
-        example-1:
-          roastery: Lucaffe
-          name: Blucaffé
-          priceEurKg: 44.14
-          blend:
-            arabica: 0.9
-            robusta: 0.1
-          taste:
-            strength: 0.3
-            caffeine: 0.7
-            roastLevel: 0.7
-            crema: 0.7
       examples:
         - roastery: Lucaffe
           name: Blucaffé
@@ -343,58 +320,35 @@ components:
               minimum: 0
               maximum: 1
               multipleOf: 0.01
-    IdCoffeeTupel:
-      description: Assigns a referenceable id to a type of coffee
-      type: object
-      x-examples:
-        example-1:
-          id: abc123
-          coffee: {}
-      title: Referenceable coffee type
-      properties:
-        id:
-          type: string
-          minLength: 1
-          description: Referenceable id of the type of coffee
-        coffee:
-          $ref: '#/components/schemas/Coffee'
       required:
-        - id
-    IdCoffeeList:
-      description: List of types of coffee and their identifiable ids and total number
-      type: object
-      x-examples:
-        example-1:
-          total: 7
-          coffees:
-            - id: string
-              coffee:
-                roastery: Lucaffe
-                name: Blucaffé
-                priceEurKg: 44.14
-                blend:
-                  arabica: 0.9
-                  robusta: 0.1
-                taste:
-                  strength: 0.3
-                  caffeine: 0.7
-                  roastLevel: 0.7
-                  crema: 0.7
-      properties:
-        total:
-          type: integer
-          description: Total number of all types of coffee
-          format: int64
-          example: 7
-          minimum: 0
-        coffees:
-          type: array
-          uniqueItems: true
-          minItems: 0
-          description: List of types of coffee and their identifiable ids
-          items:
-            $ref: '#/components/schemas/IdCoffeeTupel'
-      required:
-        - total
-      title: List of referenceable coffee types
-  responses: {}
+        - roastery
+        - name
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            description: ''
+            type: object
+            properties:
+              error:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    type: string
+                    minLength: 1
+                    description: One of a server-defined set of error codes
+                    example: BadArgument
+                  message:
+                    type: string
+                    minLength: 1
+                    description: A human-readable representation of the error
+                    example: Previous passwords may not be reused
+            required:
+              - error
+tags:
+  - name: coffee
