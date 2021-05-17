@@ -12,7 +12,7 @@ info:
     url: 'https://github.com/cbehrenberg/oai3-springboot-coffee-api/blob/main/LICENSE'
 servers:
   - url: 'http://localhost:8080/v1'
-    description: localhost
+    description: local development
 paths:
   /coffees:
     get:
@@ -26,27 +26,36 @@ paths:
             minimum: 1
             default: 10
           in: query
-          name: top
+          name: limit
           description: Limit for pagination
         - schema:
             type: integer
             example: 5
             minimum: 0
           in: query
-          name: skip
+          name: offset
           description: 'Start for pagination, beginning with 0'
         - schema:
             type: string
             example: name desc
           in: query
-          name: orderBy
-          description: 'Order by JSON path, asc(ending, default) or desc(ending)'
+          name: sortBy
+          description: 'Sort by JSON path, otherwise by id'
         - schema:
             type: string
             example: roastery eq 'Lavazza'
           in: query
           name: filter
           description: Filter expression
+        - schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            example: desc
+          in: query
+          name: orderBy
+          description: Asc(ending) or desc(ending) on sortBy field
       responses:
         '200':
           description: OK
@@ -73,9 +82,6 @@ paths:
                       required:
                         - id
                         - coffee
-                  next:
-                    type: string
-                    description: Next link for pagination
                 required:
                   - coffees
               examples: {}
@@ -86,7 +92,7 @@ paths:
       tags:
         - coffee
     post:
-      summary: Create coffee
+      summary: Create coffee type
       operationId: create-coffee
       description: Creates a new type of coffee and assigns an id.
       requestBody:
@@ -144,9 +150,9 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
       operationId: get-coffee-id
-      description: Return the current coffee type information.
+      description: Returns the current coffee type information.
     put:
-      summary: Update coffee
+      summary: Update coffee type
       operationId: update-coffee-id
       responses:
         '200':
@@ -183,7 +189,7 @@ paths:
       tags:
         - coffee
     delete:
-      summary: Delete coffee
+      summary: Delete coffee type
       operationId: delete-coffee-id
       responses:
         '200':
@@ -196,11 +202,15 @@ paths:
       tags:
         - coffee
     patch:
-      summary: ''
+      summary: Partially update coffee type
       operationId: patch-coffee-id
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoffeeType'
         '400':
           $ref: '#/components/responses/Error'
         '404':
@@ -208,11 +218,60 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
       description: Partially overwrites the data of a coffee type.
+      tags:
+        - coffee
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CoffeeType'
+              $ref: '#/components/schemas/JsonPatch'
+        description: JSON patch description for changing the type of coffee
+  '/coffees/{id}/image':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Get coffee type image
+      tags:
+        - coffee
+      responses:
+        '200':
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+                description: Raw binary data of the image file
+      operationId: get-coffee-id-image
+      description: Returns the image of a coffee type
+    put:
+      summary: Upload coffee type image
+      operationId: put-coffee-id-image
+      responses:
+        '200':
+          description: OK
+      description: Uploads a coffee type image or replaces the existing one
+      requestBody:
+        content:
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+              description: Raw binary data of the image file
+        description: Binary file of the image to be uploaded
+      tags:
+        - coffee
+    delete:
+      summary: Delete coffee type image
+      operationId: delete-coffee-id-image
+      responses:
+        '200':
+          description: OK
+      description: Deletes an existing coffee type image
       tags:
         - coffee
 components:
@@ -323,6 +382,59 @@ components:
       required:
         - roastery
         - name
+    JsonPatch:
+      type: array
+      description: 'Simple JSON patch model for generic PATCH operations, see http://jsonpatch.com/'
+      minItems: 1
+      uniqueItems: true
+      x-examples:
+        example-1:
+          - op: replace
+            path: /baz
+            value: boo
+          - op: add
+            path: /hello
+            value:
+              - world
+          - op: remove
+            path: /foo
+      title: JSON Patch
+      items:
+        type: object
+        properties:
+          op:
+            type: string
+            minLength: 1
+            enum:
+              - add
+              - remove
+              - replace
+            example: replace
+            description: Patch operation
+          path:
+            type: string
+            minLength: 1
+            description: JSON pointer in the document to be patched
+          value:
+            type:
+              - string
+              - number
+              - boolean
+              - integer
+            minLength: 1
+        required:
+          - op
+          - path
+          - value
+      examples:
+        - - op: replace
+            path: /baz
+            value: boo
+          - op: add
+            path: /hello
+            value: world
+          - op: remove
+            path: /foo
   responses:
     Error:
       description: Error
