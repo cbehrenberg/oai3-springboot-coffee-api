@@ -1,9 +1,8 @@
-openapi: 3.1.0
+openapi: 3.0.1
 info:
   title: Coffee API
   version: '1.0'
   description: API to manage types of coffee.
-  summary: API to manage types of coffee
   contact:
     name: Christian Behrenberg
     email: christian.behrenberg@gmail.com
@@ -297,29 +296,6 @@ components:
     CoffeeType:
       description: 'Describes a type of coffee in terms of name, manufacturer, price, taste and composition.'
       type: object
-      examples:
-        - roastery: Lucaffe
-          name: Blucaffé
-          priceEurKg: 44.14
-          blend:
-            arabica: 0.9
-            robusta: 0.1
-          taste:
-            strength: 0.3
-            caffeine: 0.7
-            roastLevel: 0.7
-            crema: 0.7
-        - roastery: Kimbo
-          name: Decaffeinated
-          priceEurKg: 20.41
-          blend:
-            arabica: 0.7
-            robusta: 0.3
-          taste:
-            strength: 0.7
-            caffeine: 0
-            roastLevel: 0.7
-            crema: 0.7
       title: Coffee Type
       properties:
         roastery:
@@ -434,25 +410,12 @@ components:
             minLength: 1
             description: JSON pointer in the document to be patched
           value:
-            type:
-              - string
-              - number
-              - boolean
-              - integer
+            type: string
             minLength: 1
         required:
           - op
           - path
           - value
-      examples:
-        - - op: replace
-            path: /baz
-            value: boo
-          - op: add
-            path: /hello
-            value: world
-          - op: remove
-            path: /foo
   responses:
     Error:
       description: Error
