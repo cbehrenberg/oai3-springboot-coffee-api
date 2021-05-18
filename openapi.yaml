@@ -246,6 +246,10 @@ paths:
                 type: string
                 format: binary
                 description: Raw binary data of the image file
+        '404':
+          description: Not Found
+        '500':
+          $ref: '#/components/responses/Error'
       operationId: get-coffee-id-image
       description: Returns the image of a coffee type
     put:
@@ -254,6 +258,16 @@ paths:
       responses:
         '200':
           description: OK
+        '201':
+          description: Created
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          description: Not Found
+        '406':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
       description: Uploads a coffee type image or replaces the existing one
       requestBody:
         content:
@@ -271,6 +285,10 @@ paths:
       responses:
         '200':
           description: OK
+        '404':
+          description: Not Found
+        '500':
+          $ref: '#/components/responses/Error'
       description: Deletes an existing coffee type image
       tags:
         - coffee
