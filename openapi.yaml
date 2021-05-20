@@ -85,9 +85,9 @@ paths:
                   - coffees
               examples: {}
         '400':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
         '500':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/InternalServerError'
       tags:
         - coffee
     post:
@@ -120,9 +120,9 @@ paths:
                   - id
               examples: {}
         '400':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
         '500':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/InternalServerError'
       tags:
         - coffee
   '/coffees/{id}':
@@ -147,7 +147,7 @@ paths:
         '404':
           description: Not Found
         '500':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/InternalServerError'
       operationId: get-coffee-id
       description: Returns the current coffee type information.
     put:
@@ -172,11 +172,11 @@ paths:
                 required:
                   - id
         '400':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
         '404':
           description: Not Found
         '500':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/InternalServerError'
       description: 'Replaces coffee type data, or creates a new such resource. Fails, if the id has already been assigned.'
       requestBody:
         content:
@@ -196,7 +196,7 @@ paths:
         '404':
           description: Not Found
         '500':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/InternalServerError'
       description: Deletes a type of coffee.
       tags:
         - coffee
@@ -211,11 +211,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/CoffeeType'
         '400':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
         '404':
           description: Not Found
         '500':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/InternalServerError'
       description: Partially overwrites the data of a coffee type.
       tags:
         - coffee
@@ -248,7 +248,7 @@ paths:
         '404':
           description: Not Found
         '500':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/InternalServerError'
       operationId: get-coffee-id-image
       description: Returns the image of a coffee type
     put:
@@ -260,13 +260,13 @@ paths:
         '201':
           description: Created
         '400':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
         '404':
           description: Not Found
         '406':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
         '500':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/InternalServerError'
       description: Uploads a coffee type image or replaces the existing one
       requestBody:
         content:
@@ -287,7 +287,7 @@ paths:
         '404':
           description: Not Found
         '500':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/InternalServerError'
       description: Deletes an existing coffee type image
       tags:
         - coffee
@@ -381,17 +381,6 @@ components:
       description: 'Simple JSON patch model for generic PATCH operations, see http://jsonpatch.com/'
       minItems: 1
       uniqueItems: true
-      x-examples:
-        example-1:
-          - op: replace
-            path: /baz
-            value: boo
-          - op: add
-            path: /hello
-            value:
-              - world
-          - op: remove
-            path: /foo
       title: JSON Patch
       items:
         type: object
@@ -416,31 +405,44 @@ components:
           - op
           - path
           - value
-  responses:
     Error:
-      description: Error
+      description: Error description
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          description: One of a server-defined set of error codes
+        message:
+          type: string
+          minLength: 1
+          example: Previous passwords may not be reused
+      required:
+        - code
+        - message
+  responses:
+    InternalServerError:
+      description: Internal Server Error
       content:
         application/json:
           schema:
-            description: ''
+            description: Internal Server Error details
             type: object
             properties:
               error:
-                type: object
-                required:
-                  - code
-                  - message
-                properties:
-                  code:
-                    type: string
-                    minLength: 1
-                    description: One of a server-defined set of error codes
-                    example: BadArgument
-                  message:
-                    type: string
-                    minLength: 1
-                    description: A human-readable representation of the error
-                    example: Previous passwords may not be reused
+                $ref: '#/components/schemas/Error'
+            required:
+              - error
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            description: Bad Request details
+            type: object
+            properties:
+              error:
+                $ref: '#/components/schemas/Error'
             required:
               - error
 tags:
