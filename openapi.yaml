@@ -10,8 +10,8 @@ info:
     name: MIT
     url: 'https://github.com/cbehrenberg/oai3-springboot-coffee-api/blob/main/LICENSE'
 servers:
-  - url: 'http://localhost:8080/v1'
-    description: local development
+  - url: 'http://localhost:8080'
+    description: local
 paths:
   /coffees:
     get:
@@ -36,13 +36,11 @@ paths:
           description: 'Start for pagination, beginning with 0'
         - schema:
             type: string
-            example: name desc
           in: query
           name: sortBy
           description: 'Sort by JSON path, otherwise by id'
         - schema:
             type: string
-            example: roastery eq 'Lavazza'
           in: query
           name: filter
           description: Filter expression
@@ -52,6 +50,7 @@ paths:
               - asc
               - desc
             example: desc
+            default: asc
           in: query
           name: orderBy
           description: Asc(ending) or desc(ending) on sortBy field
